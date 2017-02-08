@@ -19,6 +19,10 @@ public class Route: NSManagedObject {
     static let type = "Route"
     
     
+    //==================================================
+    // MARK: - Init
+    //==================================================
+   
     convenience init?(distance: Double, duration: Int64){
         guard let tempEntity = NSEntityDescription.entity(forEntityName: Route.type, in: CoreDataManager.shared.viewContext) else {
             fatalError("Could not initialize \(Route.type)")

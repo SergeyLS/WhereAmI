@@ -37,10 +37,10 @@ class MapViewController: UIViewController {
         
         // The activity type paramater will help the device save some power throughout the user's run
         // It will pause location updates when the user does not significantly move
-        _locationManager.activityType = .fitness
+        //_locationManager.activityType = .fitness
         
         // Movement threshold for new events
-        _locationManager.distanceFilter = 10.0
+        //_locationManager.distanceFilter = 10.0
         
         return _locationManager
     }()
@@ -70,15 +70,7 @@ class MapViewController: UIViewController {
         mapView.showsScale = true
         mapView.showsUserLocation = true
         
-        //        // show artwork on map
-        //        let artwork = Artwork(title: "King David Kalakaua",
-        //                              locationName: "Waikiki Gateway Park",
-        //                              discipline: "Sculpture",
-        //                              coordinate: CLLocationCoordinate2D(latitude: 21.283921, longitude: -157.831661))
-        //
-        //        mapView.addAnnotation(artwork)
-        
-    }
+     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -150,10 +142,17 @@ class MapViewController: UIViewController {
         
         stopRoute()
         
-        if Route(distance: distance, duration: seconds) != nil {
+        if let newRoute = Route(distance: distance, duration: seconds)  {
+            // Create locations array
+            var savedLocations = [Location]()
+            for location in self.myLocations {
+                if let savedLocation = Location(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude, timestamp: location.timestamp) {
+                    savedLocations.append(savedLocation)
+                }
+            }
+            newRoute.locations = NSOrderedSet(array: savedLocations)
             CoreDataManager.shared.saveContext()
         }
-        
     }
     
     

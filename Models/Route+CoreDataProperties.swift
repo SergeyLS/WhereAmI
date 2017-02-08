@@ -19,7 +19,7 @@ extension Route {
     @NSManaged public var distance: Double
     @NSManaged public var duration: Int64
     @NSManaged public var timestamp: Date
-    @NSManaged public var locations: NSOrderedSet?
+    @NSManaged public var locations: NSOrderedSet
 
 }
 
