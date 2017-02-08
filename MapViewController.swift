@@ -10,10 +10,11 @@ import UIKit
 
 import MapKit
 import CoreLocation
+import UserNotifications
 
 
 class MapViewController: UIViewController {
-
+    
     //==================================================
     // MARK: - Stored Properties
     //==================================================
@@ -51,8 +52,9 @@ class MapViewController: UIViewController {
     
     lazy var timer = Timer()
     var seconds: Int64 = 0
-    var distance: Double = 0.0
+    var distance: Int64 = 0
     var isStart = false
+    var kilometers: Int64 = 0
     
     //==================================================
     // MARK: - General
@@ -70,7 +72,7 @@ class MapViewController: UIViewController {
         mapView.showsScale = true
         mapView.showsUserLocation = true
         
-     }
+    }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -82,7 +84,7 @@ class MapViewController: UIViewController {
         
         showButton()
     }
-
+    
     
     
     func showStatus(location: CLLocation)  {
@@ -109,25 +111,31 @@ class MapViewController: UIViewController {
     func eachSecond(timer: Timer) {
         seconds += 1
         
-//        // Seconds
-//        let secondsQuantity = HKQuantity(unit: HKUnit.second(), doubleValue: seconds)
-//        
-//        // Distance
-//        let distanceQuantity = HKQuantity(unit: HKUnit.meter(), doubleValue: distance)
         if let myLocation = myLocation {
             
             statusLabel.text = "Altitude: \(Int(myLocation.altitude))m. Speed = \(Int(myLocation.speed*3600/1000))km/h \n"
             statusLabel.text = statusLabel.text! + "Time: \(Int(seconds)) s. Distance: \(Int(distance)) m."
             
         }
+        
+        
+        let km = Int64(distance/1000)
+        
+        if kilometers != km {
+            
+            kilometers = km
+            
+            scheduleNotification()
+        }
+        
     }
     
     
     func showButton()  {
-      startButton.isEnabled = !isStart
-      stopButton.isEnabled = isStart
-      addPointButton.isEnabled = isStart
-      saveButton.isEnabled = isStart
+        startButton.isEnabled = !isStart
+        stopButton.isEnabled = isStart
+        addPointButton.isEnabled = isStart
+        saveButton.isEnabled = isStart
     }
     
     //==================================================
@@ -142,7 +150,7 @@ class MapViewController: UIViewController {
         
         stopRoute()
         
-        if let newRoute = Route(distance: distance, duration: seconds)  {
+        if let newRoute = Route(distance: Double(distance), duration: seconds)  {
             // Create locations array
             var savedLocations = [Location]()
             for location in self.myLocations {
@@ -171,7 +179,7 @@ class MapViewController: UIViewController {
             mapView.addAnnotation(anotation)
         }
     }
-
+    
     
     @IBAction func startAction(_ sender: UIButton) {
         if isStart {
@@ -183,20 +191,41 @@ class MapViewController: UIViewController {
         
         // Reset statistics
         seconds = 0
-        distance = 0.0
+        distance = 0
+        kilometers = 0
         myLocations.removeAll(keepingCapacity: false)
         
         // Configure Timer
         let updateSelector = #selector(eachSecond(timer:))
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: updateSelector, userInfo: nil, repeats: true)
         
-        
         locationManager.startUpdatingLocation()
     }
-
+    
+    
+    //==================================================
+    // MARK: - Notification
+    //==================================================
+    func scheduleNotification(){
+        let content = UNMutableNotificationContent()
+        content.title = "1000 meters notification demo"
+        content.subtitle = "Total distance = \(distance)"
+        content.body =  "Good job!"
+        //content.badge = 1
+        
+        let request = UNNotificationRequest(identifier: "1000meters", content: content, trigger: nil)
+        
+        let notificationCenter = UNUserNotificationCenter.current()
+        notificationCenter.add(request, withCompletionHandler: nil)
+        notificationCenter.delegate = self
+        
+        
+        
+        UIApplication.shared.applicationIconBadgeNumber += 1
+   }
+    
     
 }
-
 
 
 
@@ -222,7 +251,7 @@ extension MapViewController: CLLocationManagerDelegate {
                 // Update distance
                 if self.myLocations.count > 0 {
                     // Calculate th distance between the last location and the current location
-                    self.distance += location.distance(from: self.myLocations.last!)
+                    self.distance += Int64(location.distance(from: self.myLocations.last!))
                     
                     var coords: [CLLocationCoordinate2D] = []
                     coords.append(self.myLocations.last!.coordinate)
@@ -250,7 +279,7 @@ extension MapViewController: CLLocationManagerDelegate {
 // MARK: - MKMapViewDelegate
 //==================================================
 extension MapViewController: MKMapViewDelegate {
-
+    
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         if !overlay.isKind(of: MKPolyline.self) {
             return MKOverlayRenderer()
@@ -262,4 +291,24 @@ extension MapViewController: MKMapViewDelegate {
         renderer.lineWidth = 3
         return renderer
     }
+}
+
+
+//==================================================
+// MARK: - UNUserNotificationCenterDelegate
+//==================================================
+
+extension MapViewController: UNUserNotificationCenterDelegate{
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        print(response.notification.request.content.userInfo)
+        completionHandler()
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        
+        //print("Silently handle no notification")
+        completionHandler([.alert,.sound])
+    }
+    
 }
