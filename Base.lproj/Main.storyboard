@@ -187,6 +187,35 @@
             </objects>
             <point key="canvasLocation" x="1445.5999999999999" y="483.50824587706148"/>
         </scene>
+        <!--Points-->
+        <scene sceneID="0Mg-4c-ntO">
+            <objects>
+                <tableViewController id="eVh-c2-0wa" customClass="PointsTableViewController" customModule="WhereAmI" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="GtC-Wm-HjT">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" id="mco-Rd-n0t">
+                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="mco-Rd-n0t" id="K0w-uZ-6vI">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="eVh-c2-0wa" id="fYe-1e-Mym"/>
+                            <outlet property="delegate" destination="eVh-c2-0wa" id="g7s-kU-YNx"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Points" id="Reg-x0-8yQ"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Tuy-Hu-sPZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1535.2" y="1280.5097451274364"/>
+        </scene>
         <!--Map-->
         <scene sceneID="Og4-zj-YKG">
             <objects>
@@ -232,6 +261,7 @@
                     <connections>
                         <segue destination="BYZ-38-t0r" kind="relationship" relationship="viewControllers" id="PYU-bN-rmS"/>
                         <segue destination="4Kp-bj-GdM" kind="relationship" relationship="viewControllers" id="2D6-Dr-xl0"/>
+                        <segue destination="VtS-ot-g5T" kind="relationship" relationship="viewControllers" id="peU-xj-qhS"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sCM-LT-dEE" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -257,8 +287,28 @@
             </objects>
             <point key="canvasLocation" x="596" y="484"/>
         </scene>
+        <!--Points-->
+        <scene sceneID="UT0-hz-V9h">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="VtS-ot-g5T" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Points" image="point" id="fq2-gb-Qd4"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Jr3-Tc-TmJ">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="eVh-c2-0wa" kind="relationship" relationship="rootViewController" id="8te-NO-bcQ"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="LXj-qG-1wV" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="596" y="1280.5097451274364"/>
+        </scene>
     </scenes>
     <resources>
+        <image name="point" width="20" height="20"/>
         <image name="records" width="20" height="20"/>
         <image name="route" width="20" height="20"/>
     </resources>

@@ -11,6 +11,7 @@ import UIKit
 import MapKit
 import CoreLocation
 import UserNotifications
+import CoreData
 
 
 class MapViewController: UIViewController {
@@ -76,6 +77,7 @@ class MapViewController: UIViewController {
         mapView.showsScale = true
         mapView.showsUserLocation = true
         
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -87,9 +89,13 @@ class MapViewController: UIViewController {
         super.viewWillAppear(animated)
         
         showButton()
+        showPoints()
     }
     
     
+    //==================================================
+    // MARK: - func
+    //==================================================
     
     func showStatus(location: CLLocation)  {
         statusLabel.text = "Altitude: \(Int(location.altitude))m. Speed = \(Int(location.speed*3600/1000))km/h"
@@ -172,15 +178,30 @@ class MapViewController: UIViewController {
         stopRoute()
     }
     
+    func addPoint(title: String, subtitle:String, locationCoordinate2D: CLLocationCoordinate2D)  {
+        let title = DateManager.dateAndTimeToString(date: Date())
+        let subtitle = "addPointAction"
+       
+        let _anotation = MKPointAnnotation()
+        _anotation.coordinate = locationCoordinate2D
+        _anotation.title = title
+        _anotation.subtitle = subtitle
+        mapView.addAnnotation(_anotation)
+
+    }
+    
     
     @IBAction func addPointAction(_ sender: UIButton) {
         if let myLocation = myLocation {
-            let location = CLLocationCoordinate2D(latitude: myLocation.coordinate.latitude, longitude: myLocation.coordinate.longitude)
-            let anotation = MKPointAnnotation()
-            anotation.coordinate = location
-            anotation.title = DateManager.dateAndTimeToString(date: Date())
-            anotation.subtitle = "addPointAction"
-            mapView.addAnnotation(anotation)
+            
+            let title = DateManager.dateAndTimeToString(date: Date())
+            let subtitle = "addPointAction"
+            let locationCoordinate2D = CLLocationCoordinate2D(latitude: myLocation.coordinate.latitude, longitude: myLocation.coordinate.longitude)
+            addPoint(title: title, subtitle: subtitle, locationCoordinate2D: locationCoordinate2D)
+            
+            if Point(latitude: myLocation.coordinate.latitude, longitude: myLocation.coordinate.longitude, title: title, subtitle: subtitle) != nil {
+                CoreDataManager.shared.saveContext()
+            }
         }
     }
     
@@ -215,7 +236,7 @@ class MapViewController: UIViewController {
         content.title = "1000 meters notification demo"
         content.subtitle = "Total distance = \(distance)"
         content.body =  "Good job!"
-        //content.badge = 1
+        content.badge = 1
         
         let request = UNNotificationRequest(identifier: "1000meters", content: content, trigger: nil)
         
@@ -273,6 +294,34 @@ extension MapViewController: CLLocationManagerDelegate {
                 self.myLocations.append(location)
             }
         }
+        
+    }
+    
+    func showPoints()  {
+        
+        //removeAnnotations
+        let annotationsToRemove = mapView.annotations
+        mapView.removeAnnotations( annotationsToRemove )
+        
+        //new
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: Point.type)
+        request.predicate = NSPredicate(value: true)
+        
+        let resultsArray = (try? CoreDataManager.shared.viewContext.fetch(request)) as? [Point]
+        
+        if (resultsArray?.count)! > 0 {
+            
+            for point in resultsArray! {
+                let title = point.title
+                let subtitle = point.subtitle
+                let locationCoordinate2D = CLLocationCoordinate2D(latitude: point.latitude, longitude: point.longitude)
+                addPoint(title: title, subtitle: subtitle, locationCoordinate2D: locationCoordinate2D)
+                
+            }
+            
+            
+        }
+        
         
     }
     
