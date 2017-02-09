@@ -33,6 +33,10 @@ class MapViewController: UIViewController {
         
         _locationManager.delegate = self
         
+        //_locationManager.requestWhenInUseAuthorization()
+        
+        _locationManager.requestAlwaysAuthorization()  //for Background
+        
         // We want the best and the most precise location readings, which also use more battery power
         _locationManager.desiredAccuracy = kCLLocationAccuracyBest
         
@@ -42,6 +46,8 @@ class MapViewController: UIViewController {
         
         // Movement threshold for new events
         //_locationManager.distanceFilter = 10.0
+        
+       _locationManager.allowsBackgroundLocationUpdates = true
         
         return _locationManager
     }()
@@ -62,9 +68,7 @@ class MapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        locationManager.requestWhenInUseAuthorization()
         
-        //locationManager.startUpdatingLocation()
         
         mapView.delegate = self
         

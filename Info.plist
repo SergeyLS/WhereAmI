@@ -26,6 +26,8 @@
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Show your current location</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>background location</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
