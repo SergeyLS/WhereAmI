@@ -46,7 +46,7 @@ class MapViewController: UIViewController {
         //_locationManager.activityType = .fitness
         
         // Movement threshold for new events
-        //_locationManager.distanceFilter = 10.0
+        _locationManager.distanceFilter = 5.0
         
        _locationManager.allowsBackgroundLocationUpdates = true
         

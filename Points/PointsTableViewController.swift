@@ -74,7 +74,7 @@ class PointsTableViewController: UITableViewController, NSFetchedResultsControll
         //Delete
         let deleteAction = UITableViewRowAction(style: .default, title: "Delete", handler: {(actin, indexPath) -> Void in
             let context = CoreDataManager.shared.viewContext
-            context?.delete(point)
+            context.delete(point)
             CoreDataManager.shared.saveContext()
             tableView.reloadData()//update changes
             

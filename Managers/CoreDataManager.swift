@@ -17,21 +17,22 @@ class CoreDataManager {
     // MARK: - Singleton
     //==================================================
     static let shared = CoreDataManager()
+    private init() {
+    }
     
     //==================================================
     // MARK: - Properties
     //==================================================
-    var viewContext: NSManagedObjectContext!
-    var backgroundContext: NSManagedObjectContext!
-    
-    //==================================================
-    // MARK: - init
-    //==================================================
-    init() {
-        viewContext = persistentContainer.viewContext
-        backgroundContext = persistentContainer.newBackgroundContext()
+    var viewContext: NSManagedObjectContext {
+        get {
+            let resultContext = persistentContainer.viewContext
+            resultContext.automaticallyMergesChangesFromParent = true
+            return resultContext
+        }
     }
-    
+    var newBackgroundContext: NSManagedObjectContext {
+        return persistentContainer.newBackgroundContext()
+    }
     
     //==================================================
     // MARK: - Core Data stack
@@ -82,21 +83,27 @@ class CoreDataManager {
         }
     }
     
-    
-    
-    
+    public func save(context: NSManagedObjectContext) {
+        if context.hasChanges {
+            do {
+                try context.save()
+            } catch {
+                // Replace this implementation with code to handle the error appropriately.
+                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                let nserror = error as NSError
+                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+            }
+        }
+    }
     
     //==================================================
     // MARK: - fetchedResultsController
     //==================================================
-    func fetchedResultsController(entityName: String, keyForSort: String) -> NSFetchedResultsController<NSFetchRequestResult> {
+    public func fetchedResultsController(entityName: String, keyForSort: String) -> NSFetchedResultsController<NSFetchRequestResult> {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
         let sortDescriptor = NSSortDescriptor(key: keyForSort, ascending: false)
         fetchRequest.sortDescriptors = [sortDescriptor]
-        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: CoreDataManager.shared.viewContext, sectionNameKeyPath: nil, cacheName: nil)
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: viewContext, sectionNameKeyPath: nil, cacheName: nil)
         return fetchedResultsController
     }
-    
-    
-    
 }
